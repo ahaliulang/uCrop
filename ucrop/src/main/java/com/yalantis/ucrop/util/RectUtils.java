@@ -26,6 +26,33 @@ public class RectUtils {
         };
     }
 
+
+    /**
+     * Gets a float array of the 2D coordinates representing a rectangles
+     * corners.
+     * The order of the corners in the float array is:
+     * 0---1--->2
+     * |        |
+     * 7        3
+     * |        |
+     * 6<---5---4
+     *
+     * @param r the rectangle to get the corners of
+     * @return the float array of corners (8 floats)
+     */
+    public static float[] getCornersFromRectFor8(RectF r){
+        return new float[]{
+                r.left, r.top,
+                r.centerX(),r.top,
+                r.right, r.top,
+                r.right,r.centerY(),
+                r.right, r.bottom,
+                r.centerX(),r.bottom,
+                r.left, r.bottom,
+                r.left,r.centerY()
+        };
+    }
+
     /**
      * Gets a float array of two lengths representing a rectangles width and height
      * The order of the corners in the input float array is:

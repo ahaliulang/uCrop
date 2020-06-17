@@ -16,7 +16,7 @@ import androidx.annotation.NonNull;
 public class UCropView extends FrameLayout {
 
     private GestureCropImageView mGestureCropImageView;
-    private final OverlayView mViewOverlay;
+    private final OverlayViewExtension mViewOverlay;
 
     public UCropView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
@@ -64,7 +64,7 @@ public class UCropView extends FrameLayout {
     }
 
     @NonNull
-    public OverlayView getOverlayView() {
+    public OverlayViewExtension getOverlayView() {
         return mViewOverlay;
     }
 

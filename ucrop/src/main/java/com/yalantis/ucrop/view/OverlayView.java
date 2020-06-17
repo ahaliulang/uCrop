@@ -43,33 +43,33 @@ public class OverlayView extends View {
     public static final int DEFAULT_CROP_GRID_ROW_COUNT = 2;
     public static final int DEFAULT_CROP_GRID_COLUMN_COUNT = 2;
 
-    private final RectF mCropViewRect = new RectF();
-    private final RectF mTempRect = new RectF();
+    protected final RectF mCropViewRect = new RectF();
+    protected final RectF mTempRect = new RectF();
 
     protected int mThisWidth, mThisHeight;
     protected float[] mCropGridCorners;
     protected float[] mCropGridCenter;
 
-    private int mCropGridRowCount, mCropGridColumnCount;
-    private float mTargetAspectRatio;
-    private float[] mGridPoints = null;
-    private boolean mShowCropFrame, mShowCropGrid;
-    private boolean mCircleDimmedLayer;
-    private int mDimmedColor;
-    private Path mCircularPath = new Path();
-    private Paint mDimmedStrokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private Paint mCropGridPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private Paint mCropFramePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private Paint mCropFrameCornersPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    protected int mCropGridRowCount, mCropGridColumnCount;
+    protected float mTargetAspectRatio;
+    protected float[] mGridPoints = null;
+    protected boolean mShowCropFrame, mShowCropGrid;
+    protected boolean mCircleDimmedLayer;
+    protected int mDimmedColor;
+    protected Path mCircularPath = new Path();
+    protected Paint mDimmedStrokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    protected Paint mCropGridPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    protected Paint mCropFramePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    protected Paint mCropFrameCornersPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     @FreestyleMode
-    private int mFreestyleCropMode = DEFAULT_FREESTYLE_CROP_MODE;
-    private float mPreviousTouchX = -1, mPreviousTouchY = -1;
-    private int mCurrentTouchCornerIndex = -1;
-    private int mTouchPointThreshold;
-    private int mCropRectMinSize;
-    private int mCropRectCornerTouchAreaLineLength;
+    protected int mFreestyleCropMode = DEFAULT_FREESTYLE_CROP_MODE;
+    protected float mPreviousTouchX = -1, mPreviousTouchY = -1;
+    protected int mCurrentTouchCornerIndex = -1;
+    protected int mTouchPointThreshold;
+    protected int mCropRectMinSize;
+    protected int mCropRectCornerTouchAreaLineLength;
 
-    private OverlayViewChangeListener mCallback;
+    protected OverlayViewChangeListener mCallback;
 
     private boolean mShouldSetupCropBounds;
 
@@ -259,7 +259,7 @@ public class OverlayView extends View {
         updateGridPoints();
     }
 
-    private void updateGridPoints() {
+    protected void updateGridPoints() {
         mCropGridCorners = RectUtils.getCornersFromRect(mCropViewRect);
         mCropGridCenter = RectUtils.getCenterFromRect(mCropViewRect);
 
@@ -361,7 +361,7 @@ public class OverlayView extends View {
      * |        v
      * 3<-------2
      */
-    private void updateCropViewRect(float touchX, float touchY) {
+    protected void updateCropViewRect(float touchX, float touchY) {
         mTempRect.set(mCropViewRect);
 
         switch (mCurrentTouchCornerIndex) {
@@ -414,7 +414,7 @@ public class OverlayView extends View {
      *
      * @return - index of corner that is being dragged
      */
-    private int getCurrentTouchIndex(float touchX, float touchY) {
+    protected int getCurrentTouchIndex(float touchX, float touchY) {
         int closestPointIndex = -1;
         double closestPointDistance = mTouchPointThreshold;
         for (int i = 0; i < 8; i += 2) {

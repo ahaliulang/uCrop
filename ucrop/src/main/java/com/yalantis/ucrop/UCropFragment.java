@@ -23,6 +23,7 @@ import com.yalantis.ucrop.util.SelectedStateListDrawable;
 import com.yalantis.ucrop.view.CropImageView;
 import com.yalantis.ucrop.view.GestureCropImageView;
 import com.yalantis.ucrop.view.OverlayView;
+import com.yalantis.ucrop.view.OverlayViewExtension;
 import com.yalantis.ucrop.view.TransformImageView;
 import com.yalantis.ucrop.view.UCropView;
 import com.yalantis.ucrop.view.widget.AspectRatioTextView;
@@ -84,7 +85,7 @@ public class UCropFragment extends Fragment {
 
     private UCropView mUCropView;
     private GestureCropImageView mGestureCropImageView;
-    private OverlayView mOverlayView;
+    private OverlayViewExtension mOverlayView;
     private ViewGroup mWrapperStateAspectRatio, mWrapperStateRotate, mWrapperStateScale;
     private ViewGroup mLayoutAspectRatio, mLayoutRotate, mLayoutScale;
     private List<ViewGroup> mCropAspectRatioViews = new ArrayList<>();
