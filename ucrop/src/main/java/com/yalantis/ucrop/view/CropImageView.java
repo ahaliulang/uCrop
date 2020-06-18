@@ -9,6 +9,10 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.util.AttributeSet;
 
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.yalantis.ucrop.R;
 import com.yalantis.ucrop.callback.BitmapCropCallback;
 import com.yalantis.ucrop.callback.CropBoundsChangeListener;
@@ -21,10 +25,6 @@ import com.yalantis.ucrop.util.RectUtils;
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
 
-import androidx.annotation.IntRange;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 /**
  * Created by Oleksii Shliama (https://github.com/shliama).
  * <p/>
@@ -35,7 +35,7 @@ public class CropImageView extends TransformImageView {
 
     public static final int DEFAULT_MAX_BITMAP_SIZE = 0;
     public static final int DEFAULT_IMAGE_TO_CROP_BOUNDS_ANIM_DURATION = 500;
-    public static final float DEFAULT_MAX_SCALE_MULTIPLIER = 10.0f;
+    public static final float DEFAULT_MAX_SCALE_MULTIPLIER = 100.0f;
     public static final float SOURCE_IMAGE_ASPECT_RATIO = 0f;
     public static final float DEFAULT_ASPECT_RATIO = SOURCE_IMAGE_ASPECT_RATIO;
 
@@ -275,7 +275,7 @@ public class CropImageView extends TransformImageView {
      * crop bounds rectangle center. Using temporary variables this method checks this case.
      */
     public void setImageToWrapCropBounds(boolean animate) {
-        if (mBitmapLaidOut && !isImageWrapCropBounds()) {
+        if (mBitmapLaidOut  /*&&!isImageWrapCropBounds()*/) {
 
             float currentX = mCurrentImageCenter[0];
             float currentY = mCurrentImageCenter[1];
@@ -292,6 +292,7 @@ public class CropImageView extends TransformImageView {
             mTempMatrix.mapPoints(tempCurrentImageCorners);
 
             boolean willImageWrapCropBoundsAfterTranslate = isImageWrapCropBounds(tempCurrentImageCorners);
+            willImageWrapCropBoundsAfterTranslate = false;
 
             if (willImageWrapCropBoundsAfterTranslate) {
                 final float[] imageIndents = calculateImageIndents();
@@ -349,7 +350,7 @@ public class CropImageView extends TransformImageView {
         float deltaRight = unrotatedImageRect.right - unrotatedCropRect.right;
         float deltaBottom = unrotatedImageRect.bottom - unrotatedCropRect.bottom;
 
-        float indents[] = new float[4];
+        float[] indents = new float[4];
         indents[0] = (deltaLeft > 0) ? deltaLeft : 0;
         indents[1] = (deltaTop > 0) ? deltaTop : 0;
         indents[2] = (deltaRight < 0) ? deltaRight : 0;
@@ -448,6 +449,29 @@ public class CropImageView extends TransformImageView {
         post(mZoomImageToPositionRunnable = new ZoomImageToPosition(CropImageView.this,
                 durationMs, oldScale, deltaScale, centerX, centerY));
     }
+
+    public void change(float sx,float sy,float dx,float dy){
+        mCurrentImageMatrix.postScale(sx, sy);
+        mCurrentImageMatrix.postTranslate(dx, dy);
+        setImageMatrix(mCurrentImageMatrix);
+        setImageToWrapCropBounds();
+    }
+
+/*    protected void zoomImageToPosition(float scaleX, float scaleY, float centerX, float centerY, long durationMs) {
+        if (scaleX > getMaxScale()) {
+            scaleX = getMaxScale();
+        }
+        if(scaleY > getMaxScale()){
+            scaleY = getMaxScale();
+        }
+
+        final float oldScale = getCurrentScale();
+        final float deltaScale = scale - oldScale;
+
+        post(mZoomImageToPositionRunnable = new ZoomImageToPosition(CropImageView.this,
+                durationMs, oldScale, deltaScale, centerX, centerY));
+    }*/
+
 
     private void calculateImageScaleBounds() {
         final Drawable drawable = getDrawable();

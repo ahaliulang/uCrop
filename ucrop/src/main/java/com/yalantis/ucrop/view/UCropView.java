@@ -7,11 +7,11 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
+
 import com.yalantis.ucrop.R;
 import com.yalantis.ucrop.callback.CropBoundsChangeListener;
 import com.yalantis.ucrop.callback.OverlayViewChangeListener;
-
-import androidx.annotation.NonNull;
 
 public class UCropView extends FrameLayout {
 
@@ -49,8 +49,25 @@ public class UCropView extends FrameLayout {
             @Override
             public void onCropRectUpdated(RectF cropRect) {
                 mGestureCropImageView.setCropRect(cropRect);
+
             }
         });
+
+        mViewOverlay.setOnchangeListener(new OverlayViewExtension.IOnchangeListener() {
+            @Override
+            public void onChangeListener(float scale, RectF rectF) {
+                float currentScale = mGestureCropImageView.getCurrentScale();
+//                mGestureCropImageView.zoomImageToPosition(currentScale + scale, rectF.centerX(), rectF.centerY(), GestureCropImageView.DOUBLE_TAP_ZOOM_DURATION);
+//                mGestureCropImageView.change(1f,1f,0,100);
+            }
+        });
+
+//        mViewOverlay.setOnchangeListener(new OverlayViewExtension.IOnchangeListener() {
+//            @Override
+//            public void onChangeListener(float fraction, RectF srcRect, RectF dstRect) {
+//                mGestureCropImageView.map(srcRect);
+//            }
+//        });
     }
 
     @Override

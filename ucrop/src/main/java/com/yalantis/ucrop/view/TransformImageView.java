@@ -9,16 +9,16 @@ import android.net.Uri;
 import android.util.AttributeSet;
 import android.util.Log;
 
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatImageView;
+
 import com.yalantis.ucrop.callback.BitmapLoadCallback;
 import com.yalantis.ucrop.model.ExifInfo;
 import com.yalantis.ucrop.util.BitmapLoadUtils;
 import com.yalantis.ucrop.util.FastBitmapDrawable;
 import com.yalantis.ucrop.util.RectUtils;
-
-import androidx.annotation.IntRange;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatImageView;
 
 /**
  * Created by Oleksii Shliama (https://github.com/shliama).
@@ -238,6 +238,17 @@ public class TransformImageView extends AppCompatImageView {
             }
         }
     }
+
+    public void postScale(float deltaScaleX, float deltaScaleY, float px, float py) {
+        if (deltaScaleX != 0 || deltaScaleY != 0) {
+            mCurrentImageMatrix.postScale(deltaScaleX, deltaScaleY, px, py);
+            setImageMatrix(mCurrentImageMatrix);
+            if (mTransformImageListener != null) {
+                mTransformImageListener.onScale(getMatrixScale(mCurrentImageMatrix));
+            }
+        }
+    }
+
 
     /**
      * This method rotates current image.

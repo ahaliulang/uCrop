@@ -13,7 +13,7 @@ import com.yalantis.ucrop.util.RotationGestureDetector;
  */
 public class GestureCropImageView extends CropImageView {
 
-    private static final int DOUBLE_TAP_ZOOM_DURATION = 200;
+    public static final int DOUBLE_TAP_ZOOM_DURATION = 200;
 
     private ScaleGestureDetector mScaleDetector;
     private RotationGestureDetector mRotateDetector;

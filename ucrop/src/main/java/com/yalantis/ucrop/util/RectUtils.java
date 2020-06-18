@@ -40,16 +40,16 @@ public class RectUtils {
      * @param r the rectangle to get the corners of
      * @return the float array of corners (8 floats)
      */
-    public static float[] getCornersFromRectFor8(RectF r){
+    public static float[] getCornersFromRectFor8(RectF r) {
         return new float[]{
                 r.left, r.top,
-                r.centerX(),r.top,
+                r.centerX(), r.top,
                 r.right, r.top,
-                r.right,r.centerY(),
+                r.right, r.centerY(),
                 r.right, r.bottom,
-                r.centerX(),r.bottom,
+                r.centerX(), r.bottom,
                 r.left, r.bottom,
-                r.left,r.centerY()
+                r.left, r.centerY()
         };
     }
 
@@ -94,6 +94,18 @@ public class RectUtils {
         }
         r.sort();
         return r;
+    }
+
+    public static float getScale(RectF src, RectF dst) {
+        if (src == null || dst == null) return 0f;
+        try {
+            float dstDiagonalLen = (float) Math.sqrt(Math.pow(dst.right - dst.left, 2) + Math.pow(dst.bottom - dst.top, 2));
+            float srcDiagonalLen = (float) Math.sqrt(Math.pow(src.right - src.left, 2) + Math.pow(src.bottom - src.top, 2));
+            return dstDiagonalLen / srcDiagonalLen;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0f;
     }
 
 }

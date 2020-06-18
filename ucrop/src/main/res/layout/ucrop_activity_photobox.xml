@@ -41,10 +41,11 @@
             tools:ignore="ContentDescription,MissingPrefix" />
 
         <com.yalantis.ucrop.view.UCropView
+            android:layout_gravity="center"
             android:id="@+id/ucrop"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:alpha="0" />
+            android:layout_height="1080px"
+           android:background="#fff000" />
 
     </FrameLayout>
 

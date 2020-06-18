@@ -22,6 +22,7 @@ import com.yalantis.ucrop.util.RectUtils;
  */
 public class OverlayViewExtension extends OverlayView {
 
+    private final RectF mInitRect = new RectF();
 
     public OverlayViewExtension(Context context) {
         this(context, null);
@@ -153,17 +154,15 @@ public class OverlayViewExtension extends OverlayView {
     }
 
 
-    private void updateCropViewRect(float touchX, float touchY, float diffX, float diffY) {
+    @Override
+    protected void updateCropViewRect(float touchX, float touchY) {
         mTempRect.set(mCropViewRect);
+        float diffX = touchX - mPreviousTouchX;
+        float diffY = diffX * getRatioY() / getRatioX();
         switch (mCurrentTouchCornerIndex) {
             // resize rectangle
             case 0:
-                if (diffX > diffY) {
-                    diffY = diffX * getRatioY() / getRatioX();
-                } else {
-                    diffX = diffY * getRatioX() / getRatioY();
-                }
-                mTempRect.set(mCropViewRect.left + diffX, mCropViewRect.top + diffY, mCropViewRect.right, mCropViewRect.bottom);
+                mTempRect.set(touchX, touchY, mCropViewRect.right, mCropViewRect.bottom);
                 break;
             case 1:
                 mTempRect.set(mCropViewRect.left, touchY, mCropViewRect.right, mCropViewRect.bottom);
@@ -218,11 +217,11 @@ public class OverlayViewExtension extends OverlayView {
     }
 
     private float getRatioX() {
-        return 2f;
+        return mCropViewRect.right - mCropViewRect.left;
     }
 
     private float getRatioY() {
-        return 3f;
+        return mCropViewRect.bottom - mCropViewRect.top;
     }
 
     @Override
@@ -236,7 +235,7 @@ public class OverlayViewExtension extends OverlayView {
 
         if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN) {
             mCurrentTouchCornerIndex = getCurrentTouchIndex(x, y);
-            boolean shouldHandle = mCurrentTouchCornerIndex != -1;
+            boolean shouldHandle = (mCurrentTouchCornerIndex != -1 && mCurrentTouchCornerIndex != 8);
             if (!shouldHandle) {
                 mPreviousTouchX = -1;
                 mPreviousTouchY = -1;
@@ -244,25 +243,24 @@ public class OverlayViewExtension extends OverlayView {
                 mPreviousTouchX = x;
                 mPreviousTouchY = y;
             }
+            mShowCropGrid = true;
             return shouldHandle;
         }
 
         if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_MOVE) {
-            if (event.getPointerCount() == 1 && mCurrentTouchCornerIndex != -1) {
+            if (event.getPointerCount() == 1 && mCurrentTouchCornerIndex != -1 && mCurrentTouchCornerIndex != 8) {
 
                 x = Math.min(Math.max(x, getPaddingLeft()), getWidth() - getPaddingRight());
                 y = Math.min(Math.max(y, getPaddingTop()), getHeight() - getPaddingBottom());
 
-                float diffX = x - mPreviousTouchX;
-                float diffY = y - mPreviousTouchY;
-
-                updateCropViewRect(x, y, diffX, diffY);
+                updateCropViewRect(x, y);
 
                 mPreviousTouchX = x;
                 mPreviousTouchY = y;
 
                 return true;
             }
+            return false;
         }
 
         if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP) {
@@ -270,11 +268,22 @@ public class OverlayViewExtension extends OverlayView {
             mPreviousTouchY = -1;
             mCurrentTouchCornerIndex = -1;
 
-            if (mCallback != null) {
-                mCallback.onCropRectUpdated(mCropViewRect);
-            }
 
-            recalculateFrameRect(3000);
+            final RectF newRect = calculateFrameRect(new RectF(getLeft(), getTop(), getWidth() , getHeight()));
+
+
+            final RectF currentRect = new RectF(mCropViewRect);
+            final float scaleT = (newRect.right - newRect.left)/(currentRect.right - currentRect.left);
+
+        /*    if (mCallback != null) {
+                mCallback.onCropRectUpdated(mCropViewRect);
+            }*/
+
+
+            if(mOnchangeListener != null){
+                mOnchangeListener.onChangeListener(RectUtils.getScale(mCropViewRect,newRect),currentRect);
+            }
+            recalculateFrameRect(200);
         }
         return false;
     }
@@ -284,17 +293,19 @@ public class OverlayViewExtension extends OverlayView {
 
     private void recalculateFrameRect(int durationMillis) {
 
-        final RectF newRect = new RectF(200, 200, 800, 800);
+        final RectF newRect = calculateFrameRect(new RectF(getPaddingLeft(), getPaddingTop(), getWidth() - getPaddingRight(), getHeight() - getPaddingBottom()));
 
         if (mFrameValueAnimator.isRunning()) {
             mFrameValueAnimator.cancel();
         }
 
         final RectF currentRect = new RectF(mCropViewRect);
+        final RectF sourceRect = new RectF(currentRect);
         final float diffL = newRect.left - currentRect.left;
         final float diffT = newRect.top - currentRect.top;
         final float diffR = newRect.right - currentRect.right;
         final float diffB = newRect.bottom - currentRect.bottom;
+        final float scaleT = (currentRect.right - currentRect.left) / (newRect.right - newRect.left);
         mFrameValueAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
@@ -316,6 +327,10 @@ public class OverlayViewExtension extends OverlayView {
                 // 裁剪框放大的动画RectF
                 mCropViewRect.set(currentRect.left + diffL * scale, currentRect.top + diffT * scale, currentRect.right
                         + diffR * scale, currentRect.bottom + diffB * scale);
+                if (mCallback != null) {
+                    mCallback.onCropRectUpdated(mCropViewRect);
+                }
+                mShowCropGrid = false;
                 updateGridPoints();
                 postInvalidate();
             }
@@ -324,5 +339,52 @@ public class OverlayViewExtension extends OverlayView {
         mFrameValueAnimator.start();
     }
 
+    private RectF calculateFrameRect(RectF imageRect) {
+        float frameW = getRatioX();
+        float frameH = getRatioY();
+        float frameRatio = frameW / frameH;
+        float imgRatio = imageRect.width() / imageRect.height();
 
+        float l = imageRect.left, t = imageRect.top, r = imageRect.right, b = imageRect.bottom;
+        if (frameRatio >= imgRatio) {
+            //宽比长比例大于img图宽高比的情况
+            l = imageRect.left;
+            r = imageRect.right;
+            //图的中点
+            float hy = (imageRect.top + imageRect.bottom) * 0.5f;
+            //中点到上下顶点坐标的距离
+            float hh = (imageRect.width() / frameRatio) * 0.5f;
+            t = hy - hh;
+            b = hy + hh;
+        } else if (frameRatio < imgRatio) {
+            //宽比长比例大于img图宽高比的情况
+            t = imageRect.top;
+            b = imageRect.bottom;
+            float hx = (imageRect.left + imageRect.right) * 0.5f;
+            float hw = imageRect.height() * frameRatio * 0.5f;
+            l = hx - hw;
+            r = hx + hw;
+        }
+        //裁剪框宽度
+        float w = r - l;
+        //高度
+        float h = b - t;
+        //中心点
+        float cx = l + w / 2;
+        float cy = t + h / 2;
+        //放大后的裁剪框的宽高
+        float sw = w * 1f;
+        float sh = h * 1f;
+        return new RectF(cx - sw / 2, cy - sh / 2, cx + sw / 2, cy + sh / 2);
+    }
+
+    public interface IOnchangeListener {
+        void onChangeListener(float scale, RectF rectF);
+    }
+
+    private IOnchangeListener mOnchangeListener;
+
+    public void setOnchangeListener(IOnchangeListener onchangeListener) {
+        mOnchangeListener = onchangeListener;
+    }
 }
