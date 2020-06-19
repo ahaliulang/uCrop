@@ -184,7 +184,7 @@ public class UCrop {
      * @return Intent for {@link UCropActivity}
      */
     public Intent getIntent(@NonNull Context context) {
-        mCropIntent.setClass(context, UCropActivity.class);
+        mCropIntent.setClass(context, MyCropActivity.class);
         mCropIntent.putExtras(mCropOptionsBundle);
         return mCropIntent;
     }

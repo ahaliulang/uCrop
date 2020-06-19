@@ -123,6 +123,10 @@ public class CropImageView extends TransformImageView {
         setImageToWrapCropBounds();
     }
 
+    public RectF getCropRect() {
+        return mCropRect;
+    }
+
     /**
      * This method sets aspect ratio for crop bounds.
      * If {@link #SOURCE_IMAGE_ASPECT_RATIO} value is passed - aspect ratio is calculated
@@ -275,7 +279,7 @@ public class CropImageView extends TransformImageView {
      * crop bounds rectangle center. Using temporary variables this method checks this case.
      */
     public void setImageToWrapCropBounds(boolean animate) {
-        if (mBitmapLaidOut  /*&&!isImageWrapCropBounds()*/) {
+        if (mBitmapLaidOut  &&!isImageWrapCropBounds()) {
 
             float currentX = mCurrentImageCenter[0];
             float currentY = mCurrentImageCenter[1];
@@ -292,7 +296,6 @@ public class CropImageView extends TransformImageView {
             mTempMatrix.mapPoints(tempCurrentImageCorners);
 
             boolean willImageWrapCropBoundsAfterTranslate = isImageWrapCropBounds(tempCurrentImageCorners);
-            willImageWrapCropBoundsAfterTranslate = false;
 
             if (willImageWrapCropBoundsAfterTranslate) {
                 final float[] imageIndents = calculateImageIndents();
@@ -449,29 +452,6 @@ public class CropImageView extends TransformImageView {
         post(mZoomImageToPositionRunnable = new ZoomImageToPosition(CropImageView.this,
                 durationMs, oldScale, deltaScale, centerX, centerY));
     }
-
-    public void change(float sx,float sy,float dx,float dy){
-        mCurrentImageMatrix.postScale(sx, sy);
-        mCurrentImageMatrix.postTranslate(dx, dy);
-        setImageMatrix(mCurrentImageMatrix);
-        setImageToWrapCropBounds();
-    }
-
-/*    protected void zoomImageToPosition(float scaleX, float scaleY, float centerX, float centerY, long durationMs) {
-        if (scaleX > getMaxScale()) {
-            scaleX = getMaxScale();
-        }
-        if(scaleY > getMaxScale()){
-            scaleY = getMaxScale();
-        }
-
-        final float oldScale = getCurrentScale();
-        final float deltaScale = scale - oldScale;
-
-        post(mZoomImageToPositionRunnable = new ZoomImageToPosition(CropImageView.this,
-                durationMs, oldScale, deltaScale, centerX, centerY));
-    }*/
-
 
     private void calculateImageScaleBounds() {
         final Drawable drawable = getDrawable();

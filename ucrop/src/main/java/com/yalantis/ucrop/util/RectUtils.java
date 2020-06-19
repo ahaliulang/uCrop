@@ -96,8 +96,8 @@ public class RectUtils {
         return r;
     }
 
-    public static float getScale(RectF src, RectF dst) {
-        if (src == null || dst == null) return 0f;
+    public static float getScaleFactor(RectF src, RectF dst) {
+        if (src == null || dst == null) return 1f;
         try {
             float dstDiagonalLen = (float) Math.sqrt(Math.pow(dst.right - dst.left, 2) + Math.pow(dst.bottom - dst.top, 2));
             float srcDiagonalLen = (float) Math.sqrt(Math.pow(src.right - src.left, 2) + Math.pow(src.bottom - src.top, 2));
@@ -105,7 +105,15 @@ public class RectUtils {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return 0f;
+        return 1f;
+    }
+
+    public static float[] getTransDelta(RectF src,RectF dst){
+        float[] result = new float[2];
+        if (src == null || dst == null) return result;
+        result[0] = dst.centerX() - src.centerX();
+        result[1] = dst.centerY() - src.centerY();
+        return result;
     }
 
 }

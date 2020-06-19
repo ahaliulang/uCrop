@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import com.yalantis.ucrop.R;
 import com.yalantis.ucrop.callback.CropBoundsChangeListener;
 import com.yalantis.ucrop.callback.OverlayViewChangeListener;
+import com.yalantis.ucrop.util.RectUtils;
 
 public class UCropView extends FrameLayout {
 
@@ -49,25 +50,21 @@ public class UCropView extends FrameLayout {
             @Override
             public void onCropRectUpdated(RectF cropRect) {
                 mGestureCropImageView.setCropRect(cropRect);
-
             }
         });
 
         mViewOverlay.setOnchangeListener(new OverlayViewExtension.IOnchangeListener() {
             @Override
-            public void onChangeListener(float scale, RectF rectF) {
+            public void onChangeListener(final RectF srcRect, final RectF dstRect,int animTime) {
+                float factor = RectUtils.getScaleFactor(srcRect, dstRect);
+
+                float[] transDelta = RectUtils.getTransDelta(srcRect, dstRect);
+                mGestureCropImageView.postTranslate(transDelta[0], transDelta[1]);
                 float currentScale = mGestureCropImageView.getCurrentScale();
-//                mGestureCropImageView.zoomImageToPosition(currentScale + scale, rectF.centerX(), rectF.centerY(), GestureCropImageView.DOUBLE_TAP_ZOOM_DURATION);
-//                mGestureCropImageView.change(1f,1f,0,100);
+                mGestureCropImageView.zoomInImage(currentScale * factor);
+                mGestureCropImageView.setCropRect(dstRect);
             }
         });
-
-//        mViewOverlay.setOnchangeListener(new OverlayViewExtension.IOnchangeListener() {
-//            @Override
-//            public void onChangeListener(float fraction, RectF srcRect, RectF dstRect) {
-//                mGestureCropImageView.map(srcRect);
-//            }
-//        });
     }
 
     @Override

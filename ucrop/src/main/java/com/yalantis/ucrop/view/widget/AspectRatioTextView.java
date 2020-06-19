@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Build;
@@ -93,7 +94,7 @@ public class AspectRatioTextView extends AppCompatTextView {
             float x = (mCanvasClipBounds.right - mCanvasClipBounds.left) / 2.0f;
             float y = (mCanvasClipBounds.bottom - mCanvasClipBounds.top / 2f) - mDotSize * MARGIN_MULTIPLIER;
 
-            canvas.drawCircle(x, y, mDotSize / 2f, mDotPaint);
+//            canvas.drawCircle(x, y, mDotSize / 2f, mDotPaint);
         }
     }
 
@@ -134,7 +135,7 @@ public class AspectRatioTextView extends AppCompatTextView {
                 },
                 new int[]{
                         activeColor,
-                        ContextCompat.getColor(getContext(), R.color.ucrop_color_widget)
+                        Color.parseColor("#99ffffff")
                 }
         );
 
@@ -155,7 +156,7 @@ public class AspectRatioTextView extends AppCompatTextView {
         if (!TextUtils.isEmpty(mAspectRatioTitle)) {
             setText(mAspectRatioTitle);
         } else {
-            setText(String.format(Locale.US, "%d:%d", (int) mAspectRatioX, (int) mAspectRatioY));
+            setText(String.format("%d:%d", (int) mAspectRatioX, (int) mAspectRatioY));
         }
     }
 
